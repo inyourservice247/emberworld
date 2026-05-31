@@ -497,7 +497,7 @@ function initPanorama() {
     clickHandlerArgs: p
   }));
 
-  viewer = pannellum.viewer('panorama', {
+viewer = pannellum.viewer('panorama', {
     type: 'equirectangular',
     panorama: 'skybox.jpg',
     autoLoad: true,
@@ -512,7 +512,10 @@ function initPanorama() {
     yaw: 0,
     autoRotate: -0.4,
     autoRotateInactivityDelay: 8000,
+    draggable: true,
+    disableKeyboardCtrl: false,
     hotSpots: hotspots
+});
   });
 
   // coord picker listener
