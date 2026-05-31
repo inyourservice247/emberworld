@@ -24,6 +24,15 @@
     overflow: hidden;
     background: var(--dark);
     font-family: 'EB Garamond', Georgia, serif;
+    touch-action: none;
+  }
+
+  #panorama, #world {
+    touch-action: none;
+  }
+
+  #panorama canvas {
+    touch-action: none !important;
   }
 
   /* ── ENTRY ── */
@@ -516,7 +525,7 @@ viewer = pannellum.viewer('panorama', {
     disableKeyboardCtrl: false,
     hotSpots: hotspots
 });
-  });
+
 
   // coord picker listener
   document.getElementById('panorama').addEventListener('mousemove', updateCoords);
