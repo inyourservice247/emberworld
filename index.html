@@ -600,5 +600,55 @@ function logCoords(event) {
 
 buildBgStars();
 </script>
+<script>
+// OVERRIDE: Manual touch handling for panorama
+(function() {
+  let lastX = 0, lastY = 0, lastDist = 0;
+  let isDragging = false;
+
+  function getTouchDist(e) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    return Math.sqrt(dx*dx + dy*dy);
+  }
+
+  document.addEventListener('touchstart', function(e) {
+    if (!viewer) return;
+    if (document.getElementById('poem-overlay').classList.contains('open')) return;
+    e.preventDefault();
+    isDragging = true;
+    lastX = e.touches[0].clientX;
+    lastY = e.touches[0].clientY;
+    if (e.touches.length === 2) lastDist = getTouchDist(e);
+    viewer.stopAutoRotate();
+  }, { passive: false });
+
+  document.addEventListener('touchmove', function(e) {
+    if (!viewer || !isDragging) return;
+    if (document.getElementById('poem-overlay').classList.contains('open')) return;
+    e.preventDefault();
+
+    if (e.touches.length === 2) {
+      // pinch zoom
+      const dist = getTouchDist(e);
+      const delta = lastDist - dist;
+      viewer.setHfov(viewer.getHfov() + delta * 0.1);
+      lastDist = dist;
+    } else {
+      // drag to look around
+      const dx = e.touches[0].clientX - lastX;
+      const dy = e.touches[0].clientY - lastY;
+      viewer.setYaw(viewer.getYaw() - dx * 0.2);
+      viewer.setPitch(viewer.getPitch() + dy * 0.2);
+      lastX = e.touches[0].clientX;
+      lastY = e.touches[0].clientY;
+    }
+  }, { passive: false });
+
+  document.addEventListener('touchend', function(e) {
+    isDragging = false;
+  }, { passive: false });
+})();
+</script>
 </body>
 </html>
