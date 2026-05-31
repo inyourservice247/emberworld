@@ -6,297 +6,213 @@
 <title>EMBERS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
-<script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 <style>
-  :root {
-    --cream: #f5e6c8;
-    --gold: #c9a96e;
-    --ember: #e8863a;
-    --dark: #03050d;
-  }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body {
+  width:100%; height:100%;
+  overflow:hidden;
+  background:#03050d;
+  font-family:'EB Garamond',Georgia,serif;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ENTRY */
+#intro {
+  position:fixed; inset:0; z-index:100;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  background:#03050d;
+  transition:opacity 1.4s ease;
+}
+#intro.fade-out { opacity:0; pointer-events:none; }
+#bg-stars { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.bg-star {
+  position:absolute; border-radius:50%;
+  background:#f5e6c8;
+  animation:twinkle var(--d,3s) ease-in-out infinite;
+  animation-delay:var(--delay,0s);
+}
+@keyframes twinkle {
+  0%,100%{ opacity:var(--min,0.1); transform:scale(1); }
+  50%    { opacity:var(--max,0.5); transform:scale(1.3); }
+}
+.entry-content {
+  display:flex; flex-direction:column;
+  align-items:center; gap:12px;
+  animation:fadeUp 2s ease forwards;
+  opacity:0; z-index:2;
+}
+@keyframes fadeUp {
+  from{ opacity:0; transform:translateY(18px); }
+  to  { opacity:1; transform:translateY(0); }
+}
+.entry-title {
+  font-size:clamp(32px,8vw,56px);
+  font-weight:400; letter-spacing:0.22em;
+  color:#f5e6c8;
+  text-shadow:0 0 60px rgba(245,186,80,0.25);
+}
+.entry-tagline {
+  font-size:clamp(13px,3vw,16px);
+  font-style:italic; letter-spacing:0.12em; color:#6a5a40;
+}
+.enter-btn {
+  margin-top:28px; padding:11px 36px;
+  background:transparent;
+  border:0.5px solid rgba(245,186,80,0.35);
+  color:#c9a96e;
+  font-family:'EB Garamond',serif;
+  font-size:13px; letter-spacing:0.22em;
+  cursor:pointer; border-radius:2px;
+  transition:all 0.4s;
+  touch-action:manipulation;
+}
+.enter-btn:hover, .enter-btn:active {
+  border-color:rgba(245,186,80,0.8);
+  color:#f5e6c8;
+}
 
-  html, body {
-    width: 100%; height: 100%;
-    overflow: hidden;
-    background: var(--dark);
-    font-family: 'EB Garamond', Georgia, serif;
-    touch-action: none;
-    -webkit-user-select: none;
-    user-select: none;
-  }
+/* WORLD */
+#world { position:fixed; inset:0; display:none; }
+#world.visible { display:block; }
+#sky-canvas {
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  display:block;
+  touch-action:none;
+}
 
-  /* ENTRY */
-  #intro {
-    position: fixed; inset: 0; z-index: 100;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    background: var(--dark);
-    transition: opacity 1.4s ease;
-  }
-  #intro.fade-out { opacity: 0; pointer-events: none; }
+/* STARS OVERLAY */
+#stars-layer {
+  position:absolute; inset:0;
+  pointer-events:none;
+}
+.star-dot {
+  position:absolute;
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  cursor:pointer;
+  pointer-events:all;
+  touch-action:manipulation;
+  transition:transform 0.2s;
+}
+.star-dot:active { transform:translate(-50%,-50%) scale(1.8); }
+.star-label {
+  position:absolute;
+  transform:translateX(-50%);
+  font-size:11px; letter-spacing:0.1em;
+  color:rgba(200,175,120,0.7);
+  font-style:italic;
+  white-space:nowrap;
+  pointer-events:none;
+  margin-top:2px;
+}
 
-  #bg-stars {
-    position: absolute; inset: 0;
-    pointer-events: none; overflow: hidden;
-  }
-  .bg-star {
-    position: absolute; border-radius: 50%;
-    background: var(--cream);
-    animation: twinkle var(--d, 3s) ease-in-out infinite;
-    animation-delay: var(--delay, 0s);
-  }
-  @keyframes twinkle {
-    0%, 100% { opacity: var(--min, 0.1); transform: scale(1); }
-    50%       { opacity: var(--max, 0.6); transform: scale(1.3); }
-  }
+/* HUD */
+#hud {
+  position:fixed; inset:0;
+  pointer-events:none; z-index:20;
+}
+#daily-ember {
+  position:absolute; top:20px; left:50%;
+  transform:translateX(-50%);
+  font-size:12px; letter-spacing:0.13em;
+  color:rgba(180,155,100,0.55);
+  font-style:italic; white-space:nowrap;
+  opacity:0; animation:sfade 2s ease 2s forwards;
+}
+@keyframes sfade { to{ opacity:1; } }
+#moon-label {
+  position:absolute; top:20px; right:20px;
+  font-size:10px; letter-spacing:0.16em;
+  color:rgba(180,160,110,0.3); font-style:italic;
+}
+#drag-hint {
+  position:absolute; bottom:24px; left:50%;
+  transform:translateX(-50%);
+  font-size:11px; letter-spacing:0.16em;
+  color:rgba(138,120,96,0.35); font-style:italic;
+  animation:hfade 5s ease 2.5s forwards; opacity:0;
+}
+@keyframes hfade {
+  0%{ opacity:0; } 20%{ opacity:1; } 80%{ opacity:1; } 100%{ opacity:0; }
+}
 
-  .entry-content {
-    display: flex; flex-direction: column;
-    align-items: center; gap: 12px;
-    animation: fadeUp 2s ease forwards;
-    opacity: 0;
-    z-index: 2;
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(18px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+/* POEM OVERLAY */
+#poem-overlay {
+  position:fixed; inset:0; z-index:50;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(3,5,13,0.92);
+  backdrop-filter:blur(8px);
+  opacity:0; pointer-events:none;
+  transition:opacity 0.6s ease;
+  padding:40px 24px;
+  overflow-y:auto;
+  touch-action:pan-y;
+}
+#poem-overlay.open { opacity:1; pointer-events:all; }
+.poem-card {
+  max-width:480px; width:100%;
+  display:flex; flex-direction:column; align-items:center;
+}
+.poem-date { font-size:11px; letter-spacing:0.2em; color:#4a3e2e; margin-bottom:6px; }
+.poem-title {
+  font-size:clamp(20px,5vw,26px);
+  font-weight:400; color:#f5e6c8;
+  letter-spacing:0.08em; margin-bottom:32px; text-align:center;
+}
+.poem-line {
+  display:block;
+  font-size:clamp(15px,4vw,17px);
+  color:#c4b08a; line-height:2.1;
+  text-align:center; letter-spacing:0.04em;
+  cursor:pointer; padding:4px 28px;
+  transition:color 0.2s;
+  touch-action:manipulation;
+}
+.poem-line:hover,.poem-line:active { color:#f5e6c8; }
+.line-comment {
+  font-size:12px; color:#6a5a40;
+  font-style:italic; text-align:center;
+  letter-spacing:0.06em;
+  margin:-4px 0 10px; display:none; padding:0 28px;
+}
+.line-comment.show { display:block; }
+.poem-constellation {
+  margin-top:32px; font-size:11px;
+  letter-spacing:0.18em; color:#3a3020; text-align:center;
+}
+#close-btn {
+  position:fixed; top:16px; right:16px;
+  background:none; border:none;
+  color:rgba(140,115,75,0.6);
+  font-family:'EB Garamond',serif;
+  font-size:14px; letter-spacing:0.14em;
+  cursor:pointer; z-index:60;
+  display:none; padding:10px;
+  touch-action:manipulation;
+}
 
-  .entry-title {
-    font-size: clamp(32px, 8vw, 56px);
-    font-weight: 400;
-    letter-spacing: 0.22em;
-    color: var(--cream);
-    text-shadow: 0 0 60px rgba(245,186,80,0.25);
-  }
-  .entry-tagline {
-    font-size: clamp(13px, 3vw, 16px);
-    font-style: italic;
-    letter-spacing: 0.12em;
-    color: #6a5a40;
-  }
-  .enter-btn {
-    margin-top: 28px;
-    padding: 11px 36px;
-    background: transparent;
-    border: 0.5px solid rgba(245,186,80,0.35);
-    color: var(--gold);
-    font-family: 'EB Garamond', serif;
-    font-size: 13px;
-    letter-spacing: 0.22em;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.4s;
-    touch-action: manipulation;
-  }
-  .enter-btn:hover {
-    border-color: rgba(245,186,80,0.8);
-    color: var(--cream);
-    box-shadow: 0 0 24px rgba(245,186,80,0.12);
-  }
+/* SHOOTING STARS */
+#shoot-canvas {
+  position:fixed; inset:0;
+  pointer-events:none; z-index:15;
+  touch-action:none;
+}
 
-  /* WORLD */
-  #world {
-    position: fixed; inset: 0;
-    display: none;
-    touch-action: none;
-  }
-  #world.visible { display: block; }
-
-  #panorama {
-    width: 100%; height: 100%;
-    touch-action: none;
-  }
-
-  /* pannellum internal elements */
-  #panorama > div {
-    touch-action: none !important;
-  }
-
-  .pnlm-render-container {
-    touch-action: none !important;
-  }
-
-  /* hide pannellum branding */
-  .pnlm-about-msg,
-  .pnlm-load-button,
-  .pnlm-ui { display: none !important; }
-
-  /* HUD */
-  #hud {
-    position: fixed; inset: 0;
-    pointer-events: none;
-    z-index: 20;
-  }
-
-  #daily-ember {
-    position: absolute;
-    top: 20px; left: 50%;
-    transform: translateX(-50%);
-    font-size: 12px;
-    letter-spacing: 0.13em;
-    color: rgba(180,155,100,0.55);
-    font-style: italic;
-    white-space: nowrap;
-    opacity: 0;
-    animation: subtleFade 2s ease 2s forwards;
-  }
-  @keyframes subtleFade { to { opacity: 1; } }
-
-  #moon-label {
-    position: absolute;
-    top: 20px; right: 20px;
-    font-size: 10px;
-    letter-spacing: 0.16em;
-    color: rgba(180,160,110,0.3);
-    font-style: italic;
-  }
-
-  #drag-hint {
-    position: absolute;
-    bottom: 24px; left: 50%;
-    transform: translateX(-50%);
-    font-size: 11px;
-    letter-spacing: 0.16em;
-    color: rgba(138,120,96,0.3);
-    font-style: italic;
-    animation: hintFade 5s ease 2.5s forwards;
-    opacity: 0;
-  }
-  @keyframes hintFade {
-    0%   { opacity: 0; }
-    20%  { opacity: 1; }
-    80%  { opacity: 1; }
-    100% { opacity: 0; }
-  }
-
-  /* STARS */
-  .pnlm-hotspot-base { pointer-events: all !important; }
-
-  .star-hs {
-    width: 18px; height: 18px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,245,200,0.95) 0%, rgba(255,220,120,0.4) 60%, transparent 100%);
-    box-shadow: 0 0 8px rgba(255,220,120,0.7), 0 0 20px rgba(255,200,80,0.3);
-    cursor: pointer;
-    animation: starPulse 3s ease-in-out infinite;
-    touch-action: manipulation;
-  }
-  .star-hs.dim {
-    width: 10px; height: 10px;
-    opacity: 0.5;
-    box-shadow: 0 0 4px rgba(255,220,120,0.4);
-  }
-  .star-hs.hidden-star {
-    width: 8px; height: 8px;
-    opacity: 0.15;
-    box-shadow: none;
-    animation: none;
-  }
-  @keyframes starPulse {
-    0%, 100% { box-shadow: 0 0 8px rgba(255,220,120,0.7), 0 0 20px rgba(255,200,80,0.3); }
-    50%       { box-shadow: 0 0 14px rgba(255,235,150,0.9), 0 0 30px rgba(255,210,90,0.5); }
-  }
-
-  /* POEM OVERLAY */
-  #poem-overlay {
-    position: fixed; inset: 0; z-index: 50;
-    display: flex; align-items: center; justify-content: center;
-    background: rgba(3,5,13,0.9);
-    backdrop-filter: blur(6px);
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.7s ease;
-    padding: 40px 24px;
-    overflow-y: auto;
-    touch-action: pan-y;
-  }
-  #poem-overlay.open { opacity: 1; pointer-events: all; }
-
-  .poem-card {
-    max-width: 480px; width: 100%;
-    display: flex; flex-direction: column;
-    align-items: center;
-  }
-
-  .poem-date {
-    font-size: 11px; letter-spacing: 0.2em;
-    color: #4a3e2e; margin-bottom: 6px;
-  }
-  .poem-title {
-    font-size: clamp(20px, 5vw, 26px);
-    font-weight: 400; color: var(--cream);
-    letter-spacing: 0.08em; margin-bottom: 32px;
-    text-align: center;
-  }
-  .poem-lines { width: 100%; }
-  .poem-line {
-    display: block;
-    font-size: clamp(15px, 4vw, 17px);
-    color: #c4b08a;
-    line-height: 2.1;
-    text-align: center;
-    letter-spacing: 0.04em;
-    cursor: pointer;
-    transition: color 0.2s;
-    padding: 4px 28px;
-    touch-action: manipulation;
-  }
-  .poem-line:hover, .poem-line:active { color: var(--cream); }
-
-  .line-comment {
-    font-size: 12px; color: #6a5a40;
-    font-style: italic; text-align: center;
-    letter-spacing: 0.06em;
-    margin: -4px 0 10px;
-    display: none;
-    padding: 0 28px;
-  }
-  .line-comment.show { display: block; }
-
-  .poem-constellation {
-    margin-top: 32px;
-    font-size: 11px; letter-spacing: 0.18em;
-    color: #3a3020; text-align: center;
-  }
-
-  #close-btn {
-    position: fixed; top: 20px; right: 20px;
-    background: none; border: none;
-    color: rgba(140,115,75,0.6);
-    font-family: 'EB Garamond', serif;
-    font-size: 14px; letter-spacing: 0.14em;
-    cursor: pointer; z-index: 60;
-    display: none;
-    touch-action: manipulation;
-    padding: 8px;
-  }
-
-  /* SHOOTING STAR */
-  #shoot-canvas {
-    position: fixed; inset: 0;
-    pointer-events: none; z-index: 15;
-  }
-
-  /* COORD PICKER */
-  #coord-display {
-    position: fixed; bottom: 20px; right: 20px;
-    background: rgba(3,5,13,0.85);
-    border: 0.5px solid rgba(245,186,80,0.2);
-    border-radius: 4px;
-    padding: 10px 14px;
-    font-size: 11px; color: #8a7060;
-    letter-spacing: 0.1em;
-    z-index: 80; display: none;
-    font-family: monospace;
-  }
-  #coord-log {
-    margin-top: 8px;
-    max-height: 100px; overflow-y: auto;
-    font-size: 10px; color: #5a4a38;
-  }
+/* COORD PICKER */
+#coord-display {
+  position:fixed; bottom:20px; right:20px;
+  background:rgba(3,5,13,0.9);
+  border:0.5px solid rgba(245,186,80,0.2);
+  border-radius:4px; padding:10px 14px;
+  font-size:11px; color:#8a7060;
+  letter-spacing:0.1em; z-index:80;
+  display:none; font-family:monospace;
+}
+#coord-log { margin-top:8px; font-size:10px; color:#5a4a38; }
 </style>
 </head>
 <body>
@@ -311,338 +227,592 @@
 </div>
 
 <div id="world">
-  <div id="panorama"></div>
+  <canvas id="sky-canvas"></canvas>
+  <div id="stars-layer"></div>
 </div>
 
 <div id="hud">
   <div id="daily-ember">Good evening. The sky is quiet tonight. Something waits near the east.</div>
   <div id="moon-label"></div>
-  <div id="drag-hint">swipe to wander &nbsp;·&nbsp; touch the stars</div>
+  <div id="drag-hint">swipe to wander · touch the stars</div>
 </div>
 
 <canvas id="shoot-canvas"></canvas>
 
-<div id="poem-overlay" onclick="handleOverlayClick(event)">
+<div id="poem-overlay" id="poem-overlay">
   <div class="poem-card" id="poem-card"></div>
 </div>
 <button id="close-btn" onclick="closePoem()">close</button>
 
 <div id="coord-display">
-  <div id="coord-live">pitch: — &nbsp; yaw: —</div>
+  <div id="coord-live">lon: — lat: —</div>
   <div id="coord-log"></div>
 </div>
 
 <script>
+// ── POEMS ────────────────────────────────────────────────────
 const poems = [
-  {
-    id: 'still-water', pitch: 18, yaw: -40, brightness: 'bright',
-    title: 'Still Water', date: 'March 14, 2024',
-    constellation: 'Constellation of Rain',
-    lines: [
-      { text: 'I still keep your laughter', comment: 'this line — I cried.' },
-      { text: 'inside unfinished evenings,' },
-      { text: 'a held breath between' },
-      { text: 'the last light and the dark.', comment: 'the dark always felt safer with you.' }
-    ]
-  },
-  {
-    id: 'november', pitch: 25, yaw: 60, brightness: 'bright',
-    title: 'November', date: 'November 3, 2023',
-    constellation: 'Constellation of Missing You',
-    lines: [
-      { text: 'Every city I have been to' },
-      { text: 'has a street that reminds me of you —', comment: 'there is one in every city.' },
-      { text: 'the way November light' },
-      { text: 'falls on something ordinary' },
-      { text: 'and makes it unbearable.', comment: 'yes. exactly this.' }
-    ]
-  },
-  {
-    id: 'unsent', pitch: 35, yaw: 140, brightness: 'dim',
-    title: 'Unsent', date: 'July 7, 2025',
-    constellation: 'Constellation of Unsent Things',
-    lines: [
-      { text: 'I wrote this at 2am' },
-      { text: 'and deleted it four times.' },
-      { text: 'This is the fifth version.', comment: 'what were the other four?' },
-      { text: 'All of them were true.' }
-    ]
-  },
-  {
-    id: 'wednesday', pitch: 8, yaw: -120, brightness: 'dim',
-    title: 'Wednesday', date: 'February 19, 2026',
-    constellation: 'Constellation of Late Nights',
-    lines: [
-      { text: 'Some days I do not miss you loudly.' },
-      { text: 'Just quietly, like a room' },
-      { text: 'that is slightly too big now.', comment: 'this is what it is.' }
-    ]
-  },
-  {
-    id: 'firsts', pitch: 30, yaw: -170, brightness: 'bright',
-    title: 'Firsts', date: 'August 22, 2023',
-    constellation: 'Constellation of Firsts',
-    lines: [
-      { text: 'The first time you laughed at something I said,' },
-      { text: 'I thought: ah, so this is what it\'s for —', comment: 'I felt this.' },
-      { text: 'all that quiet collecting of words,' },
-      { text: 'all those years of noticing.' }
-    ]
-  },
-  {
-    id: 'hidden-1', pitch: 42, yaw: 90, brightness: 'hidden',
-    title: '?', date: 'hidden', constellation: '',
-    lines: [
-      { text: 'You found this one.' },
-      { text: 'I wasn\'t sure you would.' },
-      { text: 'I\'m glad you did.', comment: 'some things are only for the ones who look.' }
-    ]
-  },
-  {
-    id: 'softer', pitch: 15, yaw: 20, brightness: 'dim',
-    title: 'Softer Now', date: 'May 1, 2025',
-    constellation: 'Constellation of Hope',
-    lines: [
-      { text: 'I am learning to hold things' },
-      { text: 'without gripping them.' },
-      { text: 'You taught me that.', comment: 'without knowing you did.' }
-    ]
-  }
+  { id:'still-water', lon:-40, lat:18, size:10, brightness:1.0,
+    title:'Still Water', date:'March 14, 2024', constellation:'Constellation of Rain',
+    lines:[
+      {text:'I still keep your laughter', comment:'this line — I cried.'},
+      {text:'inside unfinished evenings,'},
+      {text:'a held breath between'},
+      {text:'the last light and the dark.', comment:'the dark always felt safer with you.'}
+    ]},
+  { id:'november', lon:60, lat:25, size:8, brightness:0.8,
+    title:'November', date:'November 3, 2023', constellation:'Constellation of Missing You',
+    lines:[
+      {text:'Every city I have been to'},
+      {text:'has a street that reminds me of you —', comment:'there is one in every city.'},
+      {text:'the way November light'},
+      {text:'falls on something ordinary'},
+      {text:'and makes it unbearable.', comment:'yes. exactly this.'}
+    ]},
+  { id:'unsent', lon:140, lat:35, size:6, brightness:0.5,
+    title:'Unsent', date:'July 7, 2025', constellation:'Constellation of Unsent Things',
+    lines:[
+      {text:'I wrote this at 2am'},
+      {text:'and deleted it four times.'},
+      {text:'This is the fifth version.', comment:'what were the other four?'},
+      {text:'All of them were true.'}
+    ]},
+  { id:'wednesday', lon:-120, lat:8, size:5, brightness:0.4,
+    title:'Wednesday', date:'February 19, 2026', constellation:'Constellation of Late Nights',
+    lines:[
+      {text:'Some days I do not miss you loudly.'},
+      {text:'Just quietly, like a room'},
+      {text:'that is slightly too big now.', comment:'this is what it is.'}
+    ]},
+  { id:'firsts', lon:-170, lat:30, size:9, brightness:0.9,
+    title:'Firsts', date:'August 22, 2023', constellation:'Constellation of Firsts',
+    lines:[
+      {text:'The first time you laughed at something I said,'},
+      {text:"I thought: ah, so this is what it's for —", comment:'I felt this.'},
+      {text:'all that quiet collecting of words,'},
+      {text:'all those years of noticing.'}
+    ]},
+  { id:'hidden', lon:90, lat:42, size:4, brightness:0.15,
+    title:'?', date:'hidden', constellation:'', hidden:true,
+    lines:[
+      {text:'You found this one.'},
+      {text:"I wasn't sure you would."},
+      {text:"I'm glad you did.", comment:'some things are only for the ones who look.'}
+    ]},
+  { id:'softer', lon:20, lat:15, size:6, brightness:0.55,
+    title:'Softer Now', date:'May 1, 2025', constellation:'Constellation of Hope',
+    lines:[
+      {text:'I am learning to hold things'},
+      {text:'without gripping them.'},
+      {text:'You taught me that.', comment:'without knowing you did.'}
+    ]}
 ];
 
-// Moon phase
+// ── MOON PHASE ───────────────────────────────────────────────
 const LAUNCH = new Date('2024-01-01').getTime();
 function getMoonPhase() {
-  const elapsed = (Date.now() - LAUNCH) / 86400000;
-  const phases = ['new moon','waxing crescent','first quarter','waxing gibbous','full moon','waning gibbous','last quarter','waning crescent'];
-  return phases[Math.floor((elapsed % 30) / 30 * 8) % 8];
+  const e = (Date.now()-LAUNCH)/86400000;
+  const p = ['new moon','waxing crescent','first quarter','waxing gibbous','full moon','waning gibbous','last quarter','waning crescent'];
+  return p[Math.floor((e%30)/30*8)%8];
 }
 
-// Entry stars
+// ── ENTRY STARS ──────────────────────────────────────────────
 function buildBgStars() {
   const c = document.getElementById('bg-stars');
-  for (let i = 0; i < 80; i++) {
-    const s = document.createElement('div');
-    s.className = 'bg-star';
-    const sz = Math.random() * 1.6 + 0.4;
-    s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${(Math.random()*3+2).toFixed(1)}s;--delay:${(Math.random()*4).toFixed(1)}s;--min:${(Math.random()*0.1+0.05).toFixed(2)};--max:${(Math.random()*0.5+0.2).toFixed(2)};`;
+  for(let i=0;i<80;i++){
+    const s=document.createElement('div');
+    s.className='bg-star';
+    const sz=Math.random()*1.6+0.4;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${(Math.random()*3+2).toFixed(1)}s;--delay:${(Math.random()*4).toFixed(1)}s;--min:${(Math.random()*0.08+0.04).toFixed(2)};--max:${(Math.random()*0.5+0.15).toFixed(2)};`;
     c.appendChild(s);
   }
 }
 
-let viewer;
+// ── WEBGL PANORAMA ───────────────────────────────────────────
+let gl, program, texture;
+let yaw = 0, pitch = 10;
+let targetYaw = 0, targetPitch = 10;
+let fov = 90;
+let animating = false;
+let autoRotate = true;
+let autoRotateTimer = null;
 
-function enterWorld() {
-  const intro = document.getElementById('intro');
-  intro.classList.add('fade-out');
-  setTimeout(() => {
-    intro.style.display = 'none';
-    document.getElementById('world').classList.add('visible');
-    document.getElementById('moon-label').textContent = getMoonPhase();
-    initPanorama();
-    startShootingStars();
-  }, 1400);
+const vsSource = `
+  attribute vec2 a_pos;
+  varying vec2 v_uv;
+  void main(){
+    v_uv = a_pos;
+    gl_Position = vec4(a_pos,0,1);
+  }
+`;
+
+const fsSource = `
+  precision mediump float;
+  varying vec2 v_uv;
+  uniform sampler2D u_tex;
+  uniform float u_yaw;
+  uniform float u_pitch;
+  uniform float u_fov;
+  uniform vec2 u_res;
+
+  #define PI 3.14159265358979
+
+  void main(){
+    float aspect = u_res.x / u_res.y;
+    vec2 ndc = v_uv * vec2(aspect, 1.0);
+    float fovRad = u_fov * PI / 180.0;
+    float f = 1.0 / tan(fovRad * 0.5);
+    vec3 ray = normalize(vec3(ndc.x / f * aspect, ndc.y / f, -1.0));
+
+    float cy = cos(u_yaw);   float sy = sin(u_yaw);
+    float cp = cos(u_pitch); float sp = sin(u_pitch);
+
+    vec3 r;
+    r.x = cy*ray.x + sy*ray.z;
+    r.z = -sy*ray.x + cy*ray.z;
+    r.y = ray.y;
+    vec3 r2;
+    r2.x = r.x;
+    r2.y = cp*r.y - sp*r.z;
+    r2.z = sp*r.y + cp*r.z;
+
+    float lon = atan(r2.x, -r2.z);
+    float lat = asin(clamp(r2.y, -1.0, 1.0));
+
+    float u = (lon / (2.0*PI)) + 0.5;
+    float v = (lat / PI) + 0.5;
+
+    gl_FragColor = texture2D(u_tex, vec2(u, 1.0-v));
+  }
+`;
+
+function initGL() {
+  const canvas = document.getElementById('sky-canvas');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if(!gl){ alert('WebGL not supported'); return; }
+
+  function makeShader(type, src){
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+
+  program = gl.createProgram();
+  gl.attachShader(program, makeShader(gl.VERTEX_SHADER, vsSource));
+  gl.attachShader(program, makeShader(gl.FRAGMENT_SHADER, fsSource));
+  gl.linkProgram(program);
+  gl.useProgram(program);
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+
+  const loc = gl.getAttribLocation(program, 'a_pos');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+  texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([3,5,13,255]));
+
+  const img = new Image();
+  img.onload = function(){
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,img);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+    renderGL();
+  };
+  img.src = 'skybox.jpg';
+
+  window.addEventListener('resize', ()=>{
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    gl.viewport(0,0,canvas.width,canvas.height);
+    renderGL();
+  });
 }
 
-function initPanorama() {
-  const hotspots = poems.map(p => ({
-    pitch: p.pitch,
-    yaw: p.yaw,
-    type: 'info',
-    text: p.brightness === 'hidden' ? '' : p.title,
-    cssClass: 'star-hs' + (p.brightness === 'dim' ? ' dim' : p.brightness === 'hidden' ? ' hidden-star' : ''),
-    clickHandlerFunc: (e, args) => openPoem(args),
-    clickHandlerArgs: p
-  }));
-
-  viewer = pannellum.viewer('panorama', {
-    type: 'equirectangular',
-    panorama: 'skybox.jpg',
-    autoLoad: true,
-    showControls: false,
-    compass: false,
-    mouseZoom: true,
-    touchZoom: true,
-    hfov: 90,
-    minHfov: 50,
-    maxHfov: 120,
-    pitch: 10,
-    yaw: 0,
-    autoRotate: -0.4,
-    autoRotateInactivityDelay: 8000,
-    hotSpots: hotspots
-  });
-
-  // After viewer loads, fix touch on its internal canvas
-  viewer.on('load', function() {
-    const allCanvases = document.querySelectorAll('#panorama canvas, #panorama div');
-    allCanvases.forEach(el => {
-      el.style.touchAction = 'none';
-    });
-  });
-
-  document.getElementById('panorama').addEventListener('mousemove', updateCoords);
-  document.getElementById('panorama').addEventListener('click', logCoords);
+function renderGL() {
+  if(!gl) return;
+  const canvas = document.getElementById('sky-canvas');
+  gl.viewport(0,0,canvas.width,canvas.height);
+  gl.uniform1f(gl.getUniformLocation(program,'u_yaw'), yaw * Math.PI/180);
+  gl.uniform1f(gl.getUniformLocation(program,'u_pitch'), pitch * Math.PI/180);
+  gl.uniform1f(gl.getUniformLocation(program,'u_fov'), fov);
+  gl.uniform2f(gl.getUniformLocation(program,'u_res'), canvas.width, canvas.height);
+  gl.uniform1i(gl.getUniformLocation(program,'u_tex'), 0);
+  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+  updateStarPositions();
 }
 
-// Poem overlay
+function animate() {
+  if(!animating) return;
+  if(autoRotate) targetYaw -= 0.03;
+
+  yaw += (targetYaw - yaw) * 0.12;
+  pitch += (targetPitch - pitch) * 0.12;
+  pitch = Math.max(-60, Math.min(60, pitch));
+
+  renderGL();
+  requestAnimationFrame(animate);
+}
+
+// ── STAR POSITIONS ───────────────────────────────────────────
+function projectStar(lon, lat) {
+  const canvas = document.getElementById('sky-canvas');
+  const W = canvas.width, H = canvas.height;
+
+  const yawRad = yaw * Math.PI/180;
+  const pitchRad = pitch * Math.PI/180;
+  const lonRad = lon * Math.PI/180;
+  const latRad = lat * Math.PI/180;
+
+  // 3D point on sphere
+  let x = Math.cos(latRad) * Math.sin(lonRad);
+  let y = Math.sin(latRad);
+  let z = -Math.cos(latRad) * Math.cos(lonRad);
+
+  // rotate by yaw
+  const cy = Math.cos(-yawRad), sy = Math.sin(-yawRad);
+  const x1 = cy*x + sy*z;
+  const z1 = -sy*x + cy*z;
+  x = x1; z = z1;
+
+  // rotate by pitch
+  const cp = Math.cos(-pitchRad), sp = Math.sin(-pitchRad);
+  const y2 = cp*y - sp*z;
+  const z2 = sp*y + cp*z;
+  y = y2; z = z2;
+
+  if(z >= 0) return null; // behind camera
+
+  const fovRad = fov * Math.PI/180;
+  const f = 1.0 / Math.tan(fovRad * 0.5);
+  const aspect = W/H;
+
+  const px = (x / (-z)) * f / aspect;
+  const py = (y / (-z)) * f;
+
+  if(px < -1 || px > 1 || py < -1 || py > 1) return null;
+
+  return {
+    sx: (px + 1) * 0.5 * W,
+    sy: (1 - (py + 1) * 0.5) * H
+  };
+}
+
+function updateStarPositions() {
+  const layer = document.getElementById('stars-layer');
+  poems.forEach(p => {
+    const el = document.getElementById('star-' + p.id);
+    const lbl = document.getElementById('lbl-' + p.id);
+    if(!el) return;
+
+    const pos = projectStar(p.lon, p.lat);
+    if(!pos) {
+      el.style.display = 'none';
+      if(lbl) lbl.style.display = 'none';
+    } else {
+      el.style.display = 'block';
+      el.style.left = pos.sx + 'px';
+      el.style.top = pos.sy + 'px';
+      if(lbl && !p.hidden) {
+        lbl.style.display = 'block';
+        lbl.style.left = pos.sx + 'px';
+        lbl.style.top = (pos.sy + p.size + 6) + 'px';
+      }
+    }
+  });
+}
+
+function buildStars() {
+  const layer = document.getElementById('stars-layer');
+  poems.forEach(p => {
+    const el = document.createElement('div');
+    el.id = 'star-' + p.id;
+    el.className = 'star-dot';
+    el.style.cssText = `
+      width:${p.size*2}px;
+      height:${p.size*2}px;
+      background:radial-gradient(circle, rgba(255,245,200,${p.brightness}) 0%, rgba(255,210,100,${p.brightness*0.4}) 60%, transparent 100%);
+      box-shadow:0 0 ${p.size*2}px rgba(255,220,120,${p.brightness*0.6});
+      animation:starPulse ${2+Math.random()*2}s ease-in-out infinite;
+    `;
+
+    // touch AND click both work
+    const handler = () => {
+      stopAutoRotate();
+      openPoem(p);
+    };
+    el.addEventListener('click', handler);
+    el.addEventListener('touchend', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      handler();
+    }, { passive: false });
+
+    layer.appendChild(el);
+
+    if(!p.hidden) {
+      const lbl = document.createElement('div');
+      lbl.id = 'lbl-' + p.id;
+      lbl.className = 'star-label';
+      lbl.textContent = p.title;
+      layer.appendChild(lbl);
+    }
+  });
+}
+
+// pulse animation via stylesheet
+const styleEl = document.createElement('style');
+styleEl.textContent = `
+  @keyframes starPulse {
+    0%,100%{ opacity:1; }
+    50%{ opacity:0.6; }
+  }
+`;
+document.head.appendChild(styleEl);
+
+// ── TOUCH & MOUSE INPUT ──────────────────────────────────────
+function setupInput() {
+  const canvas = document.getElementById('sky-canvas');
+  let isDragging = false;
+  let lastX = 0, lastY = 0;
+  let lastDist = 0;
+  let moved = false;
+
+  function stopAutoRotate() {
+    autoRotate = false;
+    clearTimeout(autoRotateTimer);
+    autoRotateTimer = setTimeout(() => { autoRotate = true; }, 8000);
+  }
+  window.stopAutoRotate = stopAutoRotate;
+
+  // MOUSE
+  canvas.addEventListener('mousedown', e => {
+    isDragging = true; moved = false;
+    lastX = e.clientX; lastY = e.clientY;
+    stopAutoRotate();
+  });
+  window.addEventListener('mousemove', e => {
+    if(!isDragging) return;
+    const dx = e.clientX - lastX;
+    const dy = e.clientY - lastY;
+    if(Math.abs(dx)+Math.abs(dy) > 2) moved = true;
+    targetYaw -= dx * 0.2;
+    targetPitch += dy * 0.15;
+    targetPitch = Math.max(-60, Math.min(60, targetPitch));
+    lastX = e.clientX; lastY = e.clientY;
+  });
+  window.addEventListener('mouseup', () => { isDragging = false; });
+
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    fov = Math.max(40, Math.min(120, fov + e.deltaY * 0.05));
+    renderGL();
+  }, { passive: false });
+
+  // TOUCH — registered on the whole document with passive:false
+  document.addEventListener('touchstart', function(e) {
+    if(document.getElementById('poem-overlay').classList.contains('open')) return;
+    e.preventDefault();
+    isDragging = true; moved = false;
+    lastX = e.touches[0].clientX;
+    lastY = e.touches[0].clientY;
+    if(e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      lastDist = Math.sqrt(dx*dx+dy*dy);
+    }
+    stopAutoRotate();
+  }, { passive: false });
+
+  document.addEventListener('touchmove', function(e) {
+    if(document.getElementById('poem-overlay').classList.contains('open')) return;
+    e.preventDefault();
+    if(!isDragging) return;
+
+    if(e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.sqrt(dx*dx+dy*dy);
+      fov = Math.max(40, Math.min(120, fov + (lastDist - dist) * 0.15));
+      lastDist = dist;
+      renderGL();
+    } else {
+      const dx = e.touches[0].clientX - lastX;
+      const dy = e.touches[0].clientY - lastY;
+      if(Math.abs(dx)+Math.abs(dy) > 2) moved = true;
+      targetYaw -= dx * 0.25;
+      targetPitch += dy * 0.2;
+      targetPitch = Math.max(-60, Math.min(60, targetPitch));
+      lastX = e.touches[0].clientX;
+      lastY = e.touches[0].clientY;
+    }
+  }, { passive: false });
+
+  document.addEventListener('touchend', function(e) {
+    isDragging = false;
+  }, { passive: false });
+}
+
+// ── COORD PICKER ─────────────────────────────────────────────
+let coordPickerOn = false;
+const savedCoords = [];
+
+document.addEventListener('keydown', e => {
+  if(e.key==='c'||e.key==='C'){
+    coordPickerOn = !coordPickerOn;
+    document.getElementById('coord-display').style.display = coordPickerOn ? 'block' : 'none';
+  }
+});
+
+document.getElementById('sky-canvas').addEventListener('mousemove', e => {
+  if(!coordPickerOn) return;
+  const canvas = document.getElementById('sky-canvas');
+  const W = canvas.width, H = canvas.height;
+  const nx = (e.clientX / W) * 2 - 1;
+  const ny = 1 - (e.clientY / H) * 2;
+  const fovRad = fov * Math.PI/180;
+  const f = 1/Math.tan(fovRad*0.5);
+  const aspect = W/H;
+  let rx = nx / f * aspect, ry = ny / f, rz = -1;
+  const len = Math.sqrt(rx*rx+ry*ry+rz*rz);
+  rx/=len; ry/=len; rz/=len;
+  const yawRad = yaw*Math.PI/180, pitchRad = pitch*Math.PI/180;
+  const cy=Math.cos(yawRad),sy=Math.sin(yawRad),cp=Math.cos(pitchRad),sp=Math.sin(pitchRad);
+  const x1=cy*rx+sy*rz, z1=-sy*rx+cy*rz;
+  const y2=cp*ry-sp*z1, z2=sp*ry+cp*z1;
+  const lon = (Math.atan2(x1,-z2)*180/Math.PI).toFixed(1);
+  const lat = (Math.asin(Math.max(-1,Math.min(1,y2)))*180/Math.PI).toFixed(1);
+  document.getElementById('coord-live').textContent = `lon:${lon}  lat:${lat}`;
+});
+
+document.getElementById('sky-canvas').addEventListener('click', e => {
+  if(!coordPickerOn) return;
+  const canvas = document.getElementById('sky-canvas');
+  const W = canvas.width, H = canvas.height;
+  const nx = (e.clientX/W)*2-1;
+  const ny = 1-(e.clientY/H)*2;
+  const fovRad = fov*Math.PI/180;
+  const f = 1/Math.tan(fovRad*0.5);
+  const aspect = W/H;
+  let rx=nx/f*aspect, ry=ny/f, rz=-1;
+  const len=Math.sqrt(rx*rx+ry*ry+rz*rz);
+  rx/=len; ry/=len; rz/=len;
+  const yawRad=yaw*Math.PI/180, pitchRad=pitch*Math.PI/180;
+  const cy=Math.cos(yawRad),sy=Math.sin(yawRad),cp=Math.cos(pitchRad),sp=Math.sin(pitchRad);
+  const x1=cy*rx+sy*rz, z1=-sy*rx+cy*rz;
+  const y2=cp*ry-sp*z1, z2=sp*ry+cp*z1;
+  const lon = (Math.atan2(x1,-z2)*180/Math.PI).toFixed(1);
+  const lat = (Math.asin(Math.max(-1,Math.min(1,y2)))*180/Math.PI).toFixed(1);
+  const entry = `lon:${lon}, lat:${lat}`;
+  savedCoords.unshift(entry);
+  navigator.clipboard.writeText(entry).catch(()=>{});
+  document.getElementById('coord-log').innerHTML = savedCoords.slice(0,8).map(c=>`<div>${c}</div>`).join('');
+});
+
+// ── POEM OVERLAY ─────────────────────────────────────────────
 function openPoem(p) {
   const card = document.getElementById('poem-card');
   card.innerHTML = `
     <div class="poem-date">${p.date}</div>
     <div class="poem-title">${p.title}</div>
     <div class="poem-lines">
-      ${p.lines.map((l, i) => `
+      ${p.lines.map((l,i)=>`
         <span class="poem-line" onclick="toggleComment(${i})">${l.text}</span>
-        ${l.comment ? `<div class="line-comment" id="lc-${i}">✦ ${l.comment}</div>` : '<div style="height:6px"></div>'}
+        ${l.comment?`<div class="line-comment" id="lc-${i}">✦ ${l.comment}</div>`:'<div style="height:6px"></div>'}
       `).join('')}
     </div>
-    ${p.constellation ? `<div class="poem-constellation">${p.constellation}</div>` : ''}
+    ${p.constellation?`<div class="poem-constellation">${p.constellation}</div>`:''}
     <div style="height:4px;width:32px;background:rgba(245,186,80,0.15);border-radius:2px;margin-top:32px"></div>
   `;
   document.getElementById('poem-overlay').classList.add('open');
   document.getElementById('close-btn').style.display = 'block';
-  if (viewer) viewer.stopAutoRotate();
 }
 
 function toggleComment(i) {
-  const el = document.getElementById('lc-' + i);
-  if (el) el.classList.toggle('show');
+  const el = document.getElementById('lc-'+i);
+  if(el) el.classList.toggle('show');
 }
 
 function closePoem() {
   document.getElementById('poem-overlay').classList.remove('open');
   document.getElementById('close-btn').style.display = 'none';
-  if (viewer) setTimeout(() => viewer.startAutoRotate(), 8000);
 }
 
-function handleOverlayClick(e) {
-  if (e.target === document.getElementById('poem-overlay')) closePoem();
-}
+document.getElementById('poem-overlay').addEventListener('click', function(e){
+  if(e.target===this) closePoem();
+});
 
-// Shooting stars
+// ── SHOOTING STARS ───────────────────────────────────────────
 function startShootingStars() {
   const canvas = document.getElementById('shoot-canvas');
   const ctx = canvas.getContext('2d');
-  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  function resize(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
   resize();
   window.addEventListener('resize', resize);
-  let shoots = [];
-  function spawn() {
+  let shoots=[];
+  function spawn(){
     shoots.push({
-      x: Math.random() * canvas.width * 0.7 + 50,
-      y: Math.random() * canvas.height * 0.35 + 20,
-      len: Math.random() * 120 + 60,
-      angle: Math.PI / 6 + Math.random() * 0.3,
-      progress: 0,
-      speed: 0.025 + Math.random() * 0.015
+      x:Math.random()*canvas.width*0.7+50,
+      y:Math.random()*canvas.height*0.35+20,
+      len:Math.random()*120+60,
+      angle:Math.PI/6+Math.random()*0.3,
+      progress:0, speed:0.025+Math.random()*0.015
     });
   }
-  function schedule() { setTimeout(() => { spawn(); schedule(); }, 12000 + Math.random() * 13000); }
-  schedule();
-  setTimeout(spawn, 3000);
-  function loop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    shoots = shoots.filter(s => s.progress < 1.2);
-    shoots.forEach(s => {
-      s.progress += s.speed;
-      const p = Math.min(s.progress, 1);
-      const t = Math.max(0, p - 0.25);
-      const x1 = s.x + Math.cos(s.angle) * t * s.len;
-      const y1 = s.y + Math.sin(s.angle) * t * s.len;
-      const x2 = s.x + Math.cos(s.angle) * p * s.len;
-      const y2 = s.y + Math.sin(s.angle) * p * s.len;
-      const g = ctx.createLinearGradient(x1, y1, x2, y2);
-      g.addColorStop(0, 'rgba(245,235,210,0)');
-      g.addColorStop(1, `rgba(245,235,210,${(1-p)*0.85})`);
+  function schedule(){ setTimeout(()=>{ spawn(); schedule(); }, 12000+Math.random()*13000); }
+  schedule(); setTimeout(spawn,4000);
+  function loop(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    shoots=shoots.filter(s=>s.progress<1.2);
+    shoots.forEach(s=>{
+      s.progress+=s.speed;
+      const p=Math.min(s.progress,1);
+      const t=Math.max(0,p-0.25);
+      const x1=s.x+Math.cos(s.angle)*t*s.len;
+      const y1=s.y+Math.sin(s.angle)*t*s.len;
+      const x2=s.x+Math.cos(s.angle)*p*s.len;
+      const y2=s.y+Math.sin(s.angle)*p*s.len;
+      const g=ctx.createLinearGradient(x1,y1,x2,y2);
+      g.addColorStop(0,'rgba(245,235,210,0)');
+      g.addColorStop(1,`rgba(245,235,210,${(1-p)*0.85})`);
       ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
-      ctx.strokeStyle = g; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.strokeStyle=g; ctx.lineWidth=1.5; ctx.stroke();
       ctx.beginPath(); ctx.arc(x2,y2,2,0,Math.PI*2);
-      ctx.fillStyle = `rgba(255,245,220,${(1-p)*0.7})`; ctx.fill();
+      ctx.fillStyle=`rgba(255,245,220,${(1-p)*0.7})`; ctx.fill();
     });
     requestAnimationFrame(loop);
   }
   loop();
 }
 
-// Coord picker
-let coordPickerOn = false;
-document.addEventListener('keydown', e => {
-  if (e.key === 'c' || e.key === 'C') {
-    coordPickerOn = !coordPickerOn;
-    document.getElementById('coord-display').style.display = coordPickerOn ? 'block' : 'none';
-  }
-});
-
-function updateCoords(event) {
-  if (!coordPickerOn || !viewer) return;
-  try {
-    const rect = document.getElementById('panorama').getBoundingClientRect();
-    const coords = viewer.getRenderer().coordinatesToSphere(event.clientX - rect.left, event.clientY - rect.top);
-    if (!coords) return;
-    document.getElementById('coord-live').innerHTML = `pitch: ${coords.pitch.toFixed(1)} &nbsp; yaw: ${coords.yaw.toFixed(1)}`;
-  } catch(e) {}
-}
-
-const savedCoords = [];
-function logCoords(event) {
-  if (!coordPickerOn || !viewer) return;
-  try {
-    const rect = document.getElementById('panorama').getBoundingClientRect();
-    const coords = viewer.getRenderer().coordinatesToSphere(event.clientX - rect.left, event.clientY - rect.top);
-    if (!coords) return;
-    const entry = `pitch:${coords.pitch.toFixed(1)}, yaw:${coords.yaw.toFixed(1)}`;
-    savedCoords.unshift(entry);
-    navigator.clipboard.writeText(entry).catch(() => {});
-    document.getElementById('coord-log').innerHTML = savedCoords.slice(0,8).map(c=>`<div>${c}</div>`).join('');
-  } catch(e) {}
+// ── ENTER WORLD ──────────────────────────────────────────────
+function enterWorld() {
+  const intro = document.getElementById('intro');
+  intro.classList.add('fade-out');
+  setTimeout(()=>{
+    intro.style.display='none';
+    document.getElementById('world').classList.add('visible');
+    document.getElementById('moon-label').textContent = getMoonPhase();
+    initGL();
+    buildStars();
+    setupInput();
+    startShootingStars();
+    animating = true;
+    animate();
+  }, 1400);
 }
 
 buildBgStars();
-</script>
-<script>
-(function() {
-  let lastX = 0, lastY = 0, lastDist = 0, isDragging = false;
-
-  function getTouchDist(e) {
-    const dx = e.touches[0].clientX - e.touches[1].clientX;
-    const dy = e.touches[0].clientY - e.touches[1].clientY;
-    return Math.sqrt(dx*dx + dy*dy);
-  }
-
-  document.addEventListener('touchstart', function(e) {
-    if (!viewer) return;
-    if (document.getElementById('poem-overlay').classList.contains('open')) return;
-    e.preventDefault();
-    isDragging = true;
-    lastX = e.touches[0].clientX;
-    lastY = e.touches[0].clientY;
-    if (e.touches.length === 2) lastDist = getTouchDist(e);
-    viewer.stopAutoRotate();
-  }, { passive: false });
-
-  document.addEventListener('touchmove', function(e) {
-    if (!viewer || !isDragging) return;
-    if (document.getElementById('poem-overlay').classList.contains('open')) return;
-    e.preventDefault();
-    if (e.touches.length === 2) {
-      const dist = getTouchDist(e);
-      viewer.setHfov(viewer.getHfov() + (lastDist - dist) * 0.1);
-      lastDist = dist;
-    } else {
-      const dx = e.touches[0].clientX - lastX;
-      const dy = e.touches[0].clientY - lastY;
-      viewer.setYaw(viewer.getYaw() - dx * 0.2);
-      viewer.setPitch(viewer.getPitch() + dy * 0.2);
-      lastX = e.touches[0].clientX;
-      lastY = e.touches[0].clientY;
-    }
-  }, { passive: false });
-
-  document.addEventListener('touchend', function() {
-    isDragging = false;
-  }, { passive: false });
-})();
 </script>
 </body>
 </html>
