@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>EMBERS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ENTRY SCREEN -->
+  <div id="intro">
+    <div id="bg-stars"></div>
+    <div class="entry-content">
+      <div class="entry-title">EMBERS</div>
+      <div class="entry-tagline">Some things survive the fire.</div>
+      <button class="enter-btn" onclick="enterWorld()">Enter</button>
+    </div>
+  </div>
+
+  <!-- WORLD -->
+  <div id="world">
+    <canvas id="sky-canvas"></canvas>
+    <div id="stars-layer"></div>
+  </div>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div id="daily-ember">Good evening. The sky is quiet tonight. Something waits near the east.</div>
+    <div id="moon-label"></div>
+    <div id="drag-hint">swipe to wander · touch the stars</div>
+  </div>
+
+  <!-- SHOOTING STARS -->
+  <canvas id="shoot-canvas"></canvas>
+
+  <!-- POEM OVERLAY -->
+  <div id="poem-overlay">
+    <div class="poem-card" id="poem-card"></div>
+  </div>
+  <button id="close-btn" onclick="closePoem()">close</button>
+
+  <!-- COORD PICKER -->
+  <button id="coord-toggle" onclick="toggleCoordPicker()">📍 coords</button>
+  <div id="coord-hud">
+    <div id="coord-current">tap anywhere on the sky to get coordinates</div>
+    <div id="coord-log-list"></div>
+    <span id="coord-clear" onclick="clearCoords()">clear log</span>
+  </div>
+
+  <!-- SCRIPTS — order matters -->
+  <script src="js/poems.js"></script>
+  <script src="js/webgl.js"></script>
+  <script src="js/stars.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/coords.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+
+</body>
+</html>
