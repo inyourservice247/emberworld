@@ -87,7 +87,7 @@ function initGL() {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     renderGL();
   };
-  img.src = '/skybox.jpg';
+  img.src = SKYBOX;
 
   window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
